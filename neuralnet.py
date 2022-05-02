@@ -34,36 +34,6 @@ def parse_csv(filename, genre):
                     count = 0
     return data
 
-#Gets data for prediction data set
-def get_predict(filename):
-    data = np.array([])
-    line_count = 0
-    with open(filename) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        for row in csv_reader:
-            if line_count == 0:
-                line_count = line_count + 1
-            else:
-                try:
-                    genre = row[16]
-                except:
-                    row_vec = np.array([])
-                    sub_count = 0
-                    for t in row:
-                        try:
-                            if sub_count != 1:
-                                t = float(t)
-                                row_vec = np.append(row_vec, t)
-                        except:
-                            count = 0
-                        sub_count = sub_count + 1
-                    if line_count == 1:
-                        data = np.hstack((data, row_vec))
-                        line_count = -1
-                    else:
-                        data = np.vstack((data, row_vec))
-    return data
-
 #Parses data from file_pr_format.csv to get information
 def parse_pr(filename, decade):
     data = np.array([])
@@ -99,8 +69,8 @@ def parse_pr(filename, decade):
 #Model used 
 model = tf.keras.models.Sequential([
   tf.keras.layers.Flatten(input_shape=(14, 1)),
-  tf.keras.layers.Dense(64, activation='relu'),
-  tf.keras.layers.Dropout(0.5),
+  tf.keras.layers.Dense(64, activation='softmax'),
+  tf.keras.layers.Dropout(0.25),
   tf.keras.layers.Dense(20)
 ])
 
@@ -233,10 +203,7 @@ for i in range(0, len(latin_data) + 1):
 
 #Gets training and testing data set, using sklearn library 
 x_train, x_test, y_train, y_test = train_test_split(data, res_mat)
-
-unknown_data = get_predict('artist_genre.csv')
-print(unknown_data.shape)
 model.fit(x_train, y_train, epochs = 5)
+print("\nTesting data results:")
 model.evaluate(x_test, y_test, verbose = 2)
-result = model.predict(y_test)
-print(result)
+
