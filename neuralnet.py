@@ -2,7 +2,8 @@ import csv
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-
+#If this is here, it worked!
+print('test')
 #parse_csv times three
 def parse_csv(filename, genre):
     data = np.array([])
